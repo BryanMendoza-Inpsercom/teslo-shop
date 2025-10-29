@@ -1,0 +1,20 @@
+import { useQuery } from "@tanstack/react-query"
+import { getProductsAction } from "../actions/get.products.action"
+import { useSearchParams } from "react-router"
+
+export const useProducts = () => {
+
+  const [searchParam] = useSearchParams();
+  const limit = searchParam.get('limit') || 9;
+  const page = searchParam.get('page') || 1;
+  const offset = (Number(page) - 1) * Number(limit);
+
+  return useQuery({
+    queryKey: ['products', { offset, limit }],
+    queryFn: () => getProductsAction({
+      limit: isNaN(+limit) ? '0' : limit,
+      offset: isNaN(offset) ? 0 : offset
+    }),
+    staleTime: 1000 * 60 * 5
+  })
+}
