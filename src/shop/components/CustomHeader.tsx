@@ -5,8 +5,10 @@ import { useRef } from "react";
 import { Link, useParams, useSearchParams } from "react-router";
 import { cn } from "@/lib/utils";
 import { CustomLogo } from "@/components/custom/CustomLogo";
+import { useAuthStore } from "@/auth/store/auth.store";
 
 export const CustomHeader = () => {
+    const { user, logout } = useAuthStore();
     const [searchParam, setSearchParam] = useSearchParams();
     const { gender } = useParams();
     const searchquery = searchParam.get('query') || "";
@@ -45,8 +47,8 @@ export const CustomHeader = () => {
                     )}>
                         Hombres
                     </Link>
-                    <Link to="/gender/woman" className={cn('text-sm font-medium transition-colors hover:text-primary',
-                        gender === 'woman' ? 'underline underline-offset-4' : ''
+                    <Link to="/gender/women" className={cn('text-sm font-medium transition-colors hover:text-primary',
+                        gender === 'women' ? 'underline underline-offset-4' : ''
                     )}>
                         Mujeres
                     </Link>
@@ -75,16 +77,32 @@ export const CustomHeader = () => {
                         <Search className="h-5 w-5" />
                     </Button>
 
-                    <Link to="auth/login">
-                        <Button
-                            variant='default'
-                            size='sm'
-                            className="ml-2">
-                            Login
-                        </Button>
-                    </Link>
+                    {
+                        !user ? (
+                            <Link to="auth/login">
+                                <Button
+                                    variant='default'
+                                    size='sm'
+                                    className="ml-2">
+                                    Login
+                                </Button>
+                            </Link>
+                        ) : (
+                              <Link to="auth/login">
+                                <Button
+                                    variant='destructive'
+                                    size='sm'
+                                    className="ml-2"
+                                    onClick={logout}>
+                                    Cerrar Sesion
+                                </Button>
+                            </Link>
+                        )
+                    }
 
-                     <Link to="/admin">
+
+
+                    <Link to="/admin">
                         <Button
                             variant='destructive'
                             size='sm'
