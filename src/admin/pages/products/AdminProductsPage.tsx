@@ -1,11 +1,18 @@
 import { AdminTitle } from "@/admin/components/AdminTitle"
+import { CustomFullScreenLoading } from "@/components/custom/CustomFullScreenLoading"
 import { CustomPagination } from "@/components/custom/CustomPagination"
 import { Button } from "@/components/ui/button"
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { useProducts } from "@/shop/hooks/useProducts"
 import { PlusIcon } from "lucide-react"
 import { Link } from "react-router"
 
 export const AdminProductsPage = () => {
+
+  const { data, isLoading } = useProducts();
+
+  if (isLoading) return <CustomFullScreenLoading />
+
   return (
     <>
       <div className="flex justify-between items-center">
@@ -36,28 +43,39 @@ export const AdminProductsPage = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          <TableRow>
-            <TableCell className="font-medium">1</TableCell>
-            <TableCell>
-              <img
-                src="https://placehold.co/250x250"
-                alt="Product"
-                className="w-10 h-20 object-cover rounded-md"
-              />
-            </TableCell>
-            <TableCell>Producto 1</TableCell>
-            <TableCell>$200</TableCell>
-            <TableCell>CATEGORIA 1</TableCell>
-            <TableCell>10</TableCell>
-            <TableCell>M,S,XL,XX</TableCell>
-            <TableCell className="text-right">
-              <Link to="/admin/products/tshirt-teslo">Editar</Link>
-            </TableCell>
-          </TableRow>
+
+          {
+            Array.isArray(data?.products) && data?.products.map((producto) => (
+              <TableRow key={producto.id}>
+                <TableCell className="font-medium">{producto.id.slice(0, 8)}</TableCell>
+                <TableCell>
+                  <img
+                    src={producto.images[0]}
+                    alt={producto.title}
+                    className="w-10 h-20 object-cover rounded-md"
+                  />
+                </TableCell>
+                <TableCell>
+                  <Link className="hover:text-blue-500 underline" to={`/admin/products/${producto.id}`}>
+                  {producto.title}
+                  </Link>
+                  </TableCell>
+                <TableCell>{producto.price}</TableCell>
+                <TableCell>{producto.gender}</TableCell>
+                <TableCell>{producto.stock}</TableCell>
+                <TableCell>{producto.sizes?.join(', ')}</TableCell>
+                <TableCell className="text-right">
+                  <Link className="hover:text-blue-500" to={`/admin/products/${producto.id}`}>Editar</Link>
+                </TableCell>
+              </TableRow>
+            )
+            )
+          }
+
         </TableBody>
       </Table>
 
-      <CustomPagination totalPages={10} />
+      <CustomPagination totalPages={data?.pages || 1} />
     </>
   )
 }

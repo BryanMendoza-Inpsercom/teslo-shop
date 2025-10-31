@@ -8,7 +8,7 @@ import { CustomLogo } from "@/components/custom/CustomLogo";
 import { useAuthStore } from "@/auth/store/auth.store";
 
 export const CustomHeader = () => {
-    const { user, logout } = useAuthStore();
+    const { logout, isAdmin, authStatus } = useAuthStore();
     const [searchParam, setSearchParam] = useSearchParams();
     const { gender } = useParams();
     const searchquery = searchParam.get('query') || "";
@@ -78,17 +78,8 @@ export const CustomHeader = () => {
                     </Button>
 
                     {
-                        !user ? (
+                        authStatus === "authenticated" ? (
                             <Link to="auth/login">
-                                <Button
-                                    variant='default'
-                                    size='sm'
-                                    className="ml-2">
-                                    Login
-                                </Button>
-                            </Link>
-                        ) : (
-                              <Link to="auth/login">
                                 <Button
                                     variant='destructive'
                                     size='sm'
@@ -97,19 +88,35 @@ export const CustomHeader = () => {
                                     Cerrar Sesion
                                 </Button>
                             </Link>
+                        ) : (
+                            <Link to="auth/login">
+                                <Button
+                                    variant='default'
+                                    size='sm'
+                                    className="ml-2">
+                                    Login
+                                </Button>
+                            </Link>
                         )
+                    }
+
+                    {
+                        isAdmin() && (
+                            <Link to="/admin">
+                                <Button
+                                    variant='destructive'
+                                    size='sm'
+                                    className="ml-2">
+                                    Admin
+                                </Button>
+                            </Link>
+                        )
+
                     }
 
 
 
-                    <Link to="/admin">
-                        <Button
-                            variant='destructive'
-                            size='sm'
-                            className="ml-2">
-                            Admin
-                        </Button>
-                    </Link>
+
 
                 </div>
             </div>
